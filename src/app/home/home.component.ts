@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FirebaseAuthModularService } from '@app/shared/services/firebase/modular/firebase-auth-modular.service';
 import { FirebaseFirestoreModularService } from '@fire-modular/firebase-firestore-modular.service';
 import { from } from 'rxjs';
@@ -9,7 +9,7 @@ import { SubscriptionManager } from 'rxjs-sub-manager';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   private readonly subManager = new SubscriptionManager({
     prefixId: 'app-component',
   });
