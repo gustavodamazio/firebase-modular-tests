@@ -21,8 +21,9 @@ import {
   query,
   setDoc,
   updateDoc,
+  collectionSnapshots,
 } from '@angular/fire/firestore';
-import { from, map } from 'rxjs';
+import { catchError, from, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -56,30 +57,66 @@ export class FirebaseFirestoreModularService {
     return query(this.collection(path));
   }
 
-  collectionData<T = DocumentData>(query: Query<T>) {
-    return collectionData(query);
+  collectionValueChanges<T = DocumentData>(query: Query<T>) {
+    return collectionData(query).pipe(
+      catchError(error => {
+        console.error('Error collectionValueChanges: ', error);
+        throw error;
+      })
+    );
+  }
+
+  collectionSnapshotsChanges<T = DocumentData>(query: Query<T>) {
+    return collectionSnapshots(query).pipe(
+      catchError(error => {
+        console.error('Error collectionSnapshotsChanges: ', error);
+        throw error;
+      })
+    );
   }
 
   collectionGet<T = DocumentData>(query: Query<T>) {
-    return getDocs(query);
+    return from(getDocs(query)).pipe(
+      catchError(error => {
+        console.error('Error collectionGet: ', error);
+        throw error;
+      })
+    );
   }
 
   collectionCount<T = DocumentData>(query: Query<T>) {
-    return from(getCountFromServer(query)).pipe(map(count => count.data()));
+    return from(getCountFromServer(query))
+      .pipe(map(count => count.data()))
+      .pipe(
+        catchError(error => {
+          console.error('Error collectionCount: ', error);
+          throw error;
+        })
+      );
   }
 
   addDoc<T = DocumentData>(
     reference: CollectionReference<T>,
     data: WithFieldValue<T>
   ) {
-    return addDoc(reference, data);
+    return from(addDoc(reference, data)).pipe(
+      catchError(error => {
+        console.error('Error addDoc: ', error);
+        throw error;
+      })
+    );
   }
 
   updateDoc<T = DocumentData>(
     reference: DocumentReference<T>,
     data: UpdateData<T>
   ) {
-    return updateDoc(reference, data);
+    return from(updateDoc(reference, data)).pipe(
+      catchError(error => {
+        console.error('Error updateDoc: ', error);
+        throw error;
+      })
+    );
   }
 
   setDoc<T = DocumentData>(
@@ -87,6 +124,11 @@ export class FirebaseFirestoreModularService {
     data: PartialWithFieldValue<T>,
     setOptions: SetOptions = { merge: true }
   ) {
-    return setDoc(reference, data, setOptions);
+    return from(setDoc(reference, data, setOptions)).pipe(
+      catchError(error => {
+        console.error('Error setDoc: ', error);
+        throw error;
+      })
+    );
   }
 }
