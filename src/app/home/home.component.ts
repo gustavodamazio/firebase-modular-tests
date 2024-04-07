@@ -3,6 +3,7 @@ import { FirebaseAuthModularService } from '@app/shared/services/firebase/modula
 import { FirebaseFirestoreModularService } from '@fire-modular/firebase-firestore-modular.service';
 import { from } from 'rxjs';
 import { SubscriptionManager } from 'rxjs-sub-manager';
+import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-home',
@@ -15,7 +16,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   });
   constructor(
     private firebaseModularService: FirebaseFirestoreModularService,
-    public firebaseAuthModularService: FirebaseAuthModularService
+    public firebaseAuthModularService: FirebaseAuthModularService,
+    private angularFirestore: AngularFirestore
   ) {}
 
   ngOnInit(): void {
@@ -24,7 +26,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.subManager.add({
       ref: 'users-collection-value-changes',
       sub: from(
-        this.firebaseModularService.collectionCount(
+        this.firebaseModularService.collectionSnapshotsChanges(
           this.firebaseModularService.query('users')
         )
       ).subscribe(users => {
@@ -33,6 +35,18 @@ export class HomeComponent implements OnInit, OnDestroy {
           users,
         });
       }),
+    });
+    this.subManager.add({
+      ref: 'users-collection-value-changes-old-way',
+      sub: this.angularFirestore
+        .collection('users')
+        .valueChanges()
+        .subscribe(users => {
+          console.debug({
+            message: 'Users collection',
+            users,
+          });
+        }),
     });
   }
 
