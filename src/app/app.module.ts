@@ -16,9 +16,15 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
 import { HomeComponent } from './home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MockFirestoreComponent } from './mock/mock-firestore/mock-firestore.component';
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, HomeComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    HomeComponent,
+    MockFirestoreComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

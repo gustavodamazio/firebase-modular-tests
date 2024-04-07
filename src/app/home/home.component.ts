@@ -1,57 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FirebaseAuthModularService } from '@app/shared/services/firebase/modular/firebase-auth-modular.service';
-import { FirebaseFirestoreModularService } from '@fire-modular/firebase-firestore-modular.service';
-import { from } from 'rxjs';
-import { SubscriptionManager } from 'rxjs-sub-manager';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
-  private readonly subManager = new SubscriptionManager({
-    prefixId: 'app-component',
-  });
-  constructor(
-    private firebaseModularService: FirebaseFirestoreModularService,
-    public firebaseAuthModularService: FirebaseAuthModularService,
-    private angularFirestore: AngularFirestore
-  ) {}
-
-  ngOnInit(): void {
-    console.clear();
-    console.debug('AppComponent initialized');
-    this.subManager.add({
-      ref: 'users-collection-value-changes',
-      sub: from(
-        this.firebaseModularService.collectionSnapshotsChanges(
-          this.firebaseModularService.query('users')
-        )
-      ).subscribe(users => {
-        console.debug({
-          message: 'Users collection',
-          users,
-        });
-      }),
-    });
-    this.subManager.add({
-      ref: 'users-collection-value-changes-old-way',
-      sub: this.angularFirestore
-        .collection('users')
-        .valueChanges()
-        .subscribe(users => {
-          console.debug({
-            message: 'Users collection',
-            users,
-          });
-        }),
-    });
-  }
-
-  ngOnDestroy(): void {
-    console.debug('AppComponent destroyed');
-    this.subManager.closeAll();
-  }
+export class HomeComponent {
+  constructor(public firebaseAuthModularService: FirebaseAuthModularService) {}
 }
